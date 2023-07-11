@@ -3,10 +3,25 @@ import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import { symbol } from 'prop-types'
+import { getAllPosts } from '@/utils/api'
+import { Cat } from '@/utils/Types'
+import Link from 'next/link'
 
-const inter = Inter({ subsets: ['latin'] })
+type Props = {
+  cats: Cat [];
+};
 
-export default function Home() {
+export async function getStaticProps() {
+  const cats: Cat[] = await getAllPosts();
+
+  return {
+    props: {
+      cats,
+    },
+  };
+}
+
+export default function Home({ cats }: Props) {
   return (
     <>
       <Head>
@@ -18,22 +33,15 @@ export default function Home() {
       <div className={styles.container}>
         <h1>mochi blog</h1>
         <ul className={styles.postList}>
-          <li className={styles.post}>
-            <h2 className={styles.title}>初めての投稿</h2>
-            <p className={styles.author}>By mochi-ol</p>
-          </li>
-          <li className={styles.post}>
-            <h2 className={styles.title}>初めての投稿</h2>
-            <p className={styles.author}>By mochi-ol</p>
-          </li>
-          <li className={styles.post}>
-            <h2 className={styles.title}>初めての投稿</h2>
-            <p className={styles.author}>By mochi-ol</p>
-          </li>
-          <li className={styles.post}>
-            <h2 className={styles.title}>初めての投稿</h2>
-            <p className={styles.author}>By mochi-ol</p>
-          </li>
+          {cats.map((cat: Cat) => (
+            <Link href={`/${cat.name}`} key={cat.name}>
+              <li className={styles.post}>
+                <h2 className={styles.title}>{cat.name}</h2>
+                <p className={styles.author}>{cat.breed}</p>
+              </li>
+            </Link>
+          ))}
+          
         </ul>
       </div>
     </>
